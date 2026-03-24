@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Castlebrooke Hacks '26</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --green-deep:   #071a07;
+    --green-dark:   #0e3a0e;
+    --green-mid:    #1a5c1a;
+    --green-bright: #2d9e2d;
+    --green-glow:   #4dff4d;
+    --green-pale:   #a8e6a8;
+    --white:        #f5f5f0;
+    --cream:        #e8e4d9;
+    --off-white:    #c8c4b4;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--green-deep);
+    color: var(--white);
+    font-family: 'IBM Plex Mono', monospace;
+    overflow-x: hidden;
+    cursor: crosshair;
+  }
+
+  /* ── SCANLINE OVERLAY ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0,0,0,0.06) 2px,
+      rgba(0,0,0,0.06) 4px
+    );
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* ── NOISE GRAIN OVERLAY ── */
+  body::after {
+    content: '';
+    position: fixed;
+    inset: -50%;
+    width: 200%;
+    height: 200%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 9998;
+    opacity: 0.35;
+    animation: grain 0.5s steps(2) infinite;
+  }
+
+  @keyframes grain {
+    0%   { transform: translate(0,0); }
+    25%  { transform: translate(-2%,1%); }
+    50%  { transform: translate(1%,-1%); }
+    75%  { transform: translate(-1%,2%); }
+    100% { transform: translate(2%,-2%); }
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem 3rem;
+    border-bottom: 1px solid rgba(77,255,77,0.15);
+    background: rgba(7,26,7,0.85);
+    backdrop-filter: blur(12px);
+  }
+
+  .nav-logo {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.65rem;
+    color: var(--green-glow);
+    letter-spacing: 0.05em;
+    text-shadow: 0 0 12px var(--green-glow);
+    line-height: 1.6;
+  }
+
+  .nav-links {
+    display: flex;
+    gap: 2rem;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--off-white);
+    text-decoration: none;
+    transition: color 0.2s, text-shadow 0.2s;
+    position: relative;
+  }
+
+  .nav-links a::after {
+    content: '';
+    position: absolute;
+    bottom: -3px; left: 0; right: 0;
+    height: 1px;
+    background: var(--green-glow);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s;
+  }
+
+  .nav-links a:hover {
+    color: var(--green-glow);
+    text-shadow: 0 0 8px var(--green-glow);
+  }
+
+  .nav-links a:hover::after { transform: scaleX(1); }
+
+  .nav-cta {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.55rem;
+    padding: 0.6rem 1.2rem;
+    border: 1px solid var(--green-glow);
+    color: var(--green-glow);
+    background: transparent;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    transition: background 0.2s, box-shadow 0.2s;
+    text-shadow: 0 0 8px var(--green-glow);
+  }
+
+  .nav-cta:hover {
+    background: rgba(77,255,77,0.1);
+    box-shadow: 0 0 20px rgba(77,255,77,0.3);
+  }
+
+  /* ── HERO ── */
+  #hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 8rem 3rem 5rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* background grid */
+  #hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(45,158,45,0.08) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(45,158,45,0.08) 1px, transparent 1px);
+    background-size: 48px 48px;
+    mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black, transparent);
+  }
+
+  /* radial glow */
+  #hero::after {
+    content: '';
+    position: absolute;
+    top: 30%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(45,158,45,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-text {
+    position: relative;
+    z-index: 2;
+  }
+
+  .hero-tag {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.5rem;
+    color: var(--green-glow);
+    text-shadow: 0 0 10px var(--green-glow);
+    letter-spacing: 0.15em;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .hero-tag::before {
+    content: '';
+    display: inline-block;
+    width: 32px;
+    height: 1px;
+    background: var(--green-glow);
+    box-shadow: 0 0 6px var(--green-glow);
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(4rem, 11vw, 10rem);
+    font-weight: 900;
+    line-height: 0.92;
+    color: var(--white);
+    letter-spacing: -0.02em;
+    margin-bottom: 1rem;
+  }
+
+  .hero-title .year {
+    font-style: italic;
+    color: var(--green-glow);
+    text-shadow: 0 0 30px rgba(77,255,77,0.4);
+  }
+
+  .hero-title .castle {
+  }
+
+  .hero-title .hacks {
+    -webkit-text-stroke: 2px var(--white);
+    color: transparent;
+  }
+
+  .hero-sub {
+    font-size: 0.75rem;
+    color: var(--off-white);
+    line-height: 1.8;
+    max-width: 420px;
+    margin: 1.5rem auto 2.5rem;
+    border-left: 2px solid var(--green-mid);
+    padding-left: 1rem;
+    text-align: left;
+  }
+
+  .hero-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .btn-primary {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.55rem;
+    padding: 1rem 2rem;
+    background: var(--green-bright);
+    color: var(--green-deep);
+    border: none;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    text-decoration: none;
+    display: inline-block;
+    transition: transform 0.15s, box-shadow 0.15s;
+    clip-path: polygon(0 0, calc(100% - 8px) 0, 100% 8px, 100% 100%, 8px 100%, 0 calc(100% - 8px));
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 30px rgba(45,158,45,0.5);
+  }
+
+  .btn-secondary {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--green-pale);
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: color 0.2s;
+  }
+
+  .btn-secondary:hover { color: var(--green-glow); }
+  .btn-secondary::before { content: '→'; font-size: 1rem; }
+
+  .hero-stats {
+    display: flex;
+    gap: 2.5rem;
+    margin-top: 3rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(77,255,77,0.12);
+  }
+
+  .stat-item {}
+
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--green-glow);
+    display: block;
+    line-height: 1;
+    text-shadow: 0 0 20px rgba(77,255,77,0.3);
+  }
+
+  .stat-label {
+    font-size: 0.6rem;
+    color: var(--off-white);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 0.3rem;
+    display: block;
+  }
+
+  /* ── DRAGON SVG ── */
+  .hero-dragon {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .dragon-wrap {
+    position: relative;
+    width: 480px;
+    height: 480px;
+  }
+
+  .dragon-ring {
+    position: absolute;
+    inset: 0;
+    border: 1px solid rgba(77,255,77,0.15);
+    border-radius: 50%;
+    animation: rotate 20s linear infinite;
+  }
+
+  .dragon-ring:nth-child(2) {
+    inset: 20px;
+    border-color: rgba(77,255,77,0.1);
+    animation-duration: 30s;
+    animation-direction: reverse;
+  }
+
+  .dragon-ring:nth-child(3) {
+    inset: 40px;
+    border-color: rgba(77,255,77,0.06);
+    animation-duration: 15s;
+  }
+
+  @keyframes rotate {
+    from { transform: rotate(0deg); }
+    to   { transform: rotate(360deg); }
+  }
+
+  .dragon-svg-wrap {
+    position: absolute;
+    inset: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: float 4s ease-in-out infinite;
+    filter: drop-shadow(0 0 24px rgba(77,255,77,0.35));
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-14px); }
+  }
+
+  .dragon-glow {
+    position: absolute;
+    inset: 80px;
+    background: radial-gradient(circle, rgba(45,158,45,0.25) 0%, transparent 70%);
+    border-radius: 50%;
+    animation: pulse 3s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 0.6; transform: scale(1); }
+    50%       { opacity: 1;   transform: scale(1.1); }
+  }
+
+  .pixel-corner {
+    position: absolute;
+    width: 12px; height: 12px;
+    border-color: var(--green-glow);
+    border-style: solid;
+    opacity: 0.6;
+  }
+  .pc-tl { top: 30px; left: 30px; border-width: 2px 0 0 2px; }
+  .pc-tr { top: 30px; right: 30px; border-width: 2px 2px 0 0; }
+  .pc-bl { bottom: 30px; left: 30px; border-width: 0 0 2px 2px; }
+  .pc-br { bottom: 30px; right: 30px; border-width: 0 2px 2px 0; }
+
+  /* ── TICKER ── */
+  .ticker-wrap {
+    background: var(--green-bright);
+    padding: 0.75rem 0;
+    overflow: hidden;
+    white-space: nowrap;
+    border-top: 1px solid var(--green-mid);
+    border-bottom: 1px solid var(--green-mid);
+  }
+
+  .ticker-inner {
+    display: inline-flex;
+    animation: ticker 22s linear infinite;
+    gap: 0;
+  }
+
+  .ticker-item {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.5rem;
+    color: var(--green-deep);
+    padding: 0 2.5rem;
+    letter-spacing: 0.08em;
+  }
+
+  .ticker-sep {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.5rem;
+    color: var(--green-deep);
+    opacity: 0.5;
+  }
+
+  @keyframes ticker {
+    from { transform: translateX(0); }
+    to   { transform: translateX(-50%); }
+  }
+
+  /* ── SECTIONS ── */
+  section {
+    padding: 6rem 3rem;
+    position: relative;
+  }
+
+  .section-label {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.45rem;
+    color: var(--green-glow);
+    text-shadow: 0 0 8px var(--green-glow);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(to right, rgba(77,255,77,0.3), transparent);
+  }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    font-weight: 700;
+    line-height: 1.1;
+    margin-bottom: 1rem;
+  }
+
+  /* ── ABOUT ── */
+  #about {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6rem;
+    align-items: center;
+    background: var(--green-dark);
+  }
+
+  .about-body {
+    font-size: 0.75rem;
+    color: var(--off-white);
+    line-height: 2;
+  }
+
+  .about-body p + p { margin-top: 1rem; }
+
+  .about-visual {
+    position: relative;
+  }
+
+  .retro-card {
+    background: var(--green-deep);
+    border: 1px solid rgba(77,255,77,0.2);
+    padding: 2rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .retro-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(to right, var(--green-glow), transparent);
+  }
+
+  .card-header {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.45rem;
+    color: var(--green-glow);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .card-header .dot {
+    width: 6px; height: 6px;
+    background: var(--green-glow);
+    border-radius: 50%;
+    box-shadow: 0 0 6px var(--green-glow);
+    animation: blink 1.2s step-end infinite;
+  }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0; }
+  }
+
+  .terminal-lines {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--green-pale);
+    line-height: 2;
+  }
+
+  .terminal-lines .prompt { color: var(--green-glow); }
+  .terminal-lines .cmd    { color: var(--white); }
+  .terminal-lines .out    { color: var(--off-white); opacity: 0.8; }
+  .terminal-lines .highlight { color: var(--green-glow); }
+
+  /* ── TRACKS ── */
+  #tracks { background: var(--green-deep); }
+
+  .tracks-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5px;
+    margin-top: 3rem;
+    border: 1.5px solid rgba(77,255,77,0.15);
+  }
+
+  .track-card {
+    background: var(--green-dark);
+    padding: 2.5rem 2rem;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.2s;
+    cursor: default;
+  }
+
+  .track-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--green-bright);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.3s;
+  }
+
+  .track-card:hover { background: rgba(26,92,26,0.8); }
+  .track-card:hover::after { transform: scaleX(1); }
+
+  .track-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1.2rem;
+    display: block;
+    filter: grayscale(0.3);
+  }
+
+  .track-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--white);
+  }
+
+  .track-desc {
+    font-size: 0.65rem;
+    color: var(--off-white);
+    line-height: 1.8;
+  }
+
+  .track-num {
+    position: absolute;
+    top: 1.2rem; right: 1.5rem;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.4rem;
+    color: rgba(77,255,77,0.25);
+  }
+
+  /* ── PRIZES ── */
+  #prizes { background: var(--green-dark); }
+
+  .prizes-layout {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr;
+    gap: 1.5rem;
+    margin-top: 3rem;
+    align-items: start;
+  }
+
+  .prize-card {
+    border: 1px solid rgba(77,255,77,0.15);
+    padding: 2.5rem 2rem;
+    position: relative;
+    overflow: hidden;
+    background: var(--green-deep);
+  }
+
+  .prize-card.first {
+    border-color: rgba(77,255,77,0.4);
+    background: linear-gradient(135deg, rgba(45,158,45,0.12) 0%, var(--green-deep) 60%);
+  }
+
+  .prize-card.first::before {
+    content: '★ GRAND PRIZE';
+    position: absolute;
+    top: 1rem; right: 1rem;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.38rem;
+    color: var(--green-glow);
+    text-shadow: 0 0 8px var(--green-glow);
+    letter-spacing: 0.05em;
+  }
+
+  .prize-place {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.45rem;
+    color: var(--green-pale);
+    letter-spacing: 0.1em;
+    margin-bottom: 0.8rem;
+    display: block;
+  }
+
+  .prize-amount {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-weight: 900;
+    color: var(--green-glow);
+    line-height: 1;
+    text-shadow: 0 0 30px rgba(77,255,77,0.3);
+  }
+
+  .prize-card.first .prize-amount { font-size: 4rem; }
+
+  .prize-perks {
+    margin-top: 1.2rem;
+    list-style: none;
+  }
+
+  .prize-perks li {
+    font-size: 0.65rem;
+    color: var(--off-white);
+    padding: 0.4rem 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .prize-perks li::before { content: '▸'; color: var(--green-glow); }
+
+  /* ── SCHEDULE ── */
+  #schedule { background: var(--green-deep); }
+
+  .schedule-timeline {
+    margin-top: 3rem;
+    position: relative;
+    padding-left: 2rem;
+  }
+
+  .schedule-timeline::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 1px;
+    background: linear-gradient(to bottom, var(--green-glow), transparent);
+  }
+
+  .schedule-item {
+    display: grid;
+    grid-template-columns: 120px 1fr;
+    gap: 2rem;
+    padding: 1.5rem 0;
+    position: relative;
+    align-items: start;
+  }
+
+  .schedule-item::before {
+    content: '';
+    position: absolute;
+    left: -2rem;
+    top: 1.8rem;
+    width: 7px; height: 7px;
+    border: 1px solid var(--green-glow);
+    background: var(--green-deep);
+    transform: rotate(45deg);
+    box-shadow: 0 0 8px var(--green-glow);
+  }
+
+  .sched-time {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.42rem;
+    color: var(--green-glow);
+    line-height: 1.8;
+    padding-top: 0.2rem;
+  }
+
+  .sched-event {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--white);
+    margin-bottom: 0.2rem;
+  }
+
+  .sched-desc {
+    font-size: 0.65rem;
+    color: var(--off-white);
+    line-height: 1.7;
+  }
+
+  /* ── FAQ ── */
+  #faq { background: var(--green-dark); }
+
+  .faq-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    margin-top: 3rem;
+    background: rgba(77,255,77,0.08);
+  }
+
+  .faq-item {
+    background: var(--green-dark);
+    padding: 2rem;
+    transition: background 0.2s;
+  }
+
+  .faq-item:hover { background: rgba(14,58,14,0.9); }
+
+  .faq-q {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 0.7rem;
+    color: var(--white);
+  }
+
+  .faq-a {
+    font-size: 0.65rem;
+    color: var(--off-white);
+    line-height: 1.8;
+  }
+
+  /* ── CTA FOOTER SECTION ── */
+  #cta {
+    background: var(--green-deep);
+    text-align: center;
+    padding: 8rem 3rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #cta::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(45,158,45,0.06) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(45,158,45,0.06) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+
+  #cta::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px; height: 600px;
+    background: radial-gradient(circle, rgba(45,158,45,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .cta-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.5rem, 5vw, 5rem);
+    font-weight: 900;
+    line-height: 1.05;
+    position: relative; z-index: 2;
+    margin-bottom: 1rem;
+  }
+
+  .cta-title em {
+    font-style: italic;
+    color: var(--green-glow);
+    text-shadow: 0 0 40px rgba(77,255,77,0.4);
+  }
+
+  .cta-sub {
+    font-size: 0.75rem;
+    color: var(--off-white);
+    margin-bottom: 3rem;
+    position: relative; z-index: 2;
+    line-height: 1.8;
+  }
+
+  .cta-btn {
+    position: relative; z-index: 2;
+    display: inline-block;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.65rem;
+    padding: 1.4rem 3rem;
+    background: transparent;
+    border: 2px solid var(--green-glow);
+    color: var(--green-glow);
+    cursor: pointer;
+    letter-spacing: 0.08em;
+    text-decoration: none;
+    text-shadow: 0 0 10px var(--green-glow);
+    box-shadow: 0 0 30px rgba(77,255,77,0.15), inset 0 0 30px rgba(77,255,77,0.05);
+    transition: background 0.2s, box-shadow 0.2s, transform 0.15s;
+    clip-path: polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 12px 100%, 0 calc(100% - 12px));
+  }
+
+  .cta-btn:hover {
+    background: rgba(77,255,77,0.08);
+    box-shadow: 0 0 60px rgba(77,255,77,0.25), inset 0 0 30px rgba(77,255,77,0.1);
+    transform: translateY(-3px);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--green-dark);
+    border-top: 1px solid rgba(77,255,77,0.1);
+    padding: 2rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .footer-logo {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 0.5rem;
+    color: var(--green-glow);
+    opacity: 0.7;
+    text-shadow: 0 0 8px var(--green-glow);
+    line-height: 1.8;
+  }
+
+  .footer-copy {
+    font-size: 0.6rem;
+    color: var(--off-white);
+    opacity: 0.5;
+  }
+
+  .footer-links {
+    display: flex; gap: 1.5rem; list-style: none;
+  }
+
+  .footer-links a {
+    font-size: 0.6rem;
+    color: var(--off-white);
+    text-decoration: none;
+    opacity: 0.6;
+    transition: opacity 0.2s, color 0.2s;
+  }
+
+  .footer-links a:hover { opacity: 1; color: var(--green-glow); }
+
+  /* ── ANIMATIONS ON LOAD ── */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(24px);
+    animation: fadeUp 0.7s ease forwards;
+  }
+
+  @keyframes fadeUp {
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-up:nth-child(1) { animation-delay: 0.1s; }
+  .fade-up:nth-child(2) { animation-delay: 0.25s; }
+  .fade-up:nth-child(3) { animation-delay: 0.4s; }
+  .fade-up:nth-child(4) { animation-delay: 0.55s; }
+  .fade-up:nth-child(5) { animation-delay: 0.7s; }
+
+  .hero-title:hover {
+    animation: glitch 0.3s steps(2) 1;
+  }
+
+  @keyframes glitch {
+    0%   { transform: translate(0); }
+    25%  { transform: translate(-3px, 1px); clip-path: inset(20% 0 60% 0); }
+    50%  { transform: translate(3px, -1px); clip-path: inset(60% 0 10% 0); }
+    75%  { transform: translate(-1px, 2px); clip-path: inset(40% 0 30% 0); }
+    100% { transform: translate(0); clip-path: none; }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    #hero { grid-template-columns: 1fr; padding: 7rem 1.5rem 3rem; text-align: center; }
+    .hero-sub { margin: 1.5rem auto 2.5rem; }
+    #about { grid-template-columns: 1fr; padding: 4rem 1.5rem; gap: 3rem; }
+    .tracks-grid { grid-template-columns: 1fr; gap: 0; }
+    .prizes-layout { grid-template-columns: 1fr; }
+    .faq-grid { grid-template-columns: 1fr; }
+    section { padding: 4rem 1.5rem; }
+    #cta { padding: 5rem 1.5rem; }
+    footer { flex-direction: column; align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">CB<br>HACKS</div>
+  <a href="https://forms.gle/SabipQgxRzRvSA6r5" target="_blank" rel="noopener" class="nav-cta">Register →</a>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-text">
+    <div class="hero-tag fade-up">hackathon · 2026 · castlebrooke</div>
+    <h1 class="hero-title fade-up">
+      Castlebrooke <span class="hacks">Hacks</span> <span class="year">'26</span>
+    </h1>
+    <p class="hero-sub fade-up">
+      Build something legendary.<br>
+      Castlebrooke Secondary School
+    </p>
+    <div class="hero-actions fade-up">
+      <a href="https://forms.gle/SabipQgxRzRvSA6r5" target="_blank" rel="noopener" class="btn-primary">Register Now</a>
+      <a href="#about" class="btn-secondary">Learn More</a>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker-wrap" aria-hidden="true">
+  <div class="ticker-inner">
+    <span class="ticker-item">CASTLEBROOKE HACKS '26</span>
+    <span class="ticker-sep">✦</span>
+    <span class="ticker-item">72 HOURS OF BUILDING</span>
+    <span class="ticker-sep">✦</span>
+    <span class="ticker-item">$10,000 IN PRIZES</span>
+    <span class="ticker-sep">✦</span>
+    <span class="ticker-item">FREE FOOD & SWAG</span>
+    <span class="ticker-sep">✦</span>
+    <span class="ticker-item">CASTLEBROOKE SECONDARY SCHOOL</span>
+    <span class="ticker-sep">✦</span>
+    <span class="ticker-item">CASTLEBROOKE HACKS '26</span>
+    <span class="ticker-sep">✦</span>
+    <span class="ticker-item">72 HOURS OF BUILDING</span>
+    <span class="ticker-sep">✦</span>
+    <span class="ticker-item">$10,000 IN PRIZES</span>
+    <span class="ticker-sep">✦</span>
+    <span class="ticker-item">FREE FOOD & SWAG</span>
+    <span class="ticker-sep">✦</span>
+    <span class="ticker-item">CASTLEBROOKE SECONDARY SCHOOL</span>
+    <span class="ticker-sep">✦</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div>
+    <div class="section-label">01 — About</div>
+    <h2 class="section-title">Where legends<br><em style="font-style:italic;color:var(--green-glow)">are forged.</em></h2>
+    <div class="about-body" style="margin-top:1.5rem;">
+      <p>Castlebrooke Hacks '26 is Brampton's premier high-school hackathon — 48 uninterrupted hours where students shed sleep, chase ideas, and build projects that matter.</p>
+      <p>Hosted at Castlebrooke Secondary School, we bring together the sharpest student minds across Ontario for a weekend of coding, creating, and competing under the banner of our dragon.</p>
+      <p>Whether you're a seasoned hacker or picking up a keyboard for the first time, there's a team, a track, and a prize with your name on it. Come hungry. Leave legendary.</p>
+    </div>
+  </div>
+  <div class="about-visual">
+    <div class="retro-card">
+      <div class="card-header">
+        <span class="dot"></span>
+        SYSTEM TERMINAL — CB_HACKS_26
+      </div>
+      <div class="terminal-lines">
+        <div><span class="prompt">$ </span><span class="cmd">event --info</span></div>
+        <div class="out">Loading event data...</div>
+        <div>&nbsp;</div>
+        <div><span class="highlight">DATE</span>   March 20–22, 2026</div>
+        <div><span class="highlight">VENUE</span>  Castlebrooke Secondary</div>
+        <div><span class="highlight">CITY</span>   Brampton, Ontario</div>
+        <div><span class="highlight">HOURS</span>  48</div>
+        <div>&nbsp;</div>
+        <div><span class="prompt">$ </span><span class="cmd">eligibility --check</span></div>
+        <div class="out">✓ High school students (Gr. 9–12)</div>
+        <div class="out">✓ All skill levels welcome</div>
+        <div class="out">✓ Teams of 2–4 hackers</div>
+        <div class="out">✓ Solo participants welcome</div>
+        <div>&nbsp;</div>
+        <div><span class="prompt">$ </span><span class="cmd">cost --query</span></div>
+        <div><span class="highlight">FREE</span>  (meals + swag included)</div>
+        <div>&nbsp;</div>
+        <div><span class="prompt">$ </span><span class="cmd">register<span style="animation:blink 1s step-end infinite;display:inline-block">█</span></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRACKS -->
+<section id="tracks">
+  <div class="section-label">02 — Tracks</div>
+  <h2 class="section-title">Choose your<br><em style="font-style:italic;color:var(--green-glow)">battleground.</em></h2>
+  <div class="tracks-grid">
+    <div class="track-card">
+      <span class="track-num">T01</span>
+      <span class="track-icon">🌍</span>
+      <div class="track-name">Climate & Earth</div>
+      <p class="track-desc">Tech solutions to the planet's most urgent environmental crises. From carbon tracking to wildfire prediction — if the Earth needs it, build it.</p>
+    </div>
+    <div class="track-card">
+      <span class="track-num">T02</span>
+      <span class="track-icon">🤖</span>
+      <div class="track-name">AI & Machine Learning</div>
+      <p class="track-desc">Build intelligent tools that push the state of the art. NLP, computer vision, generative models — harness the dragon of modern AI.</p>
+    </div>
+    <div class="track-card">
+      <span class="track-num">T03</span>
+      <span class="track-icon">🏥</span>
+      <div class="track-name">Health & Wellness</div>
+      <p class="track-desc">From mental health apps to diagnostic tools — make technology that genuinely improves how people live, heal, and thrive.</p>
+    </div>
+    <div class="track-card">
+      <span class="track-num">T04</span>
+      <span class="track-icon">🔐</span>
+      <div class="track-name">Cybersecurity</div>
+      <p class="track-desc">Defend the digital realm. Build tools that protect users, expose vulnerabilities, and make the internet safer for everyone.</p>
+    </div>
+    <div class="track-card">
+      <span class="track-num">T05</span>
+      <span class="track-icon">🏙️</span>
+      <div class="track-name">Smart Cities</div>
+      <p class="track-desc">Reimagine urban life. Transit optimization, civic tech, community platforms — make Brampton and beyond smarter, fairer, better.</p>
+    </div>
+    <div class="track-card">
+      <span class="track-num">T06</span>
+      <span class="track-icon">🎮</span>
+      <div class="track-name">Open / Wild Card</div>
+      <p class="track-desc">No constraints. No rules. Build whatever burns brightest in your imagination. The wildest ideas often win the biggest prizes.</p>
+    </div>
+  </div>
+</section>
+
+<!-- WORKSHOPS -->
+<section id="workshops" style="background: var(--green-dark);">
+  <div class="section-label">03 — Workshops</div>
+  <h2 class="section-title">Level up your<br><em style="font-style:italic;color:var(--green-glow)">craft.</em></h2>
+  <p style="font-size:0.72rem;color:var(--off-white);line-height:1.9;max-width:580px;margin-top:1rem;margin-bottom:3rem;">Two workshops run during the event — designed to give every hacker, beginner to advanced, sharper tools and sharper thinking.</p>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;">
+
+    <!-- Workshop 1 -->
+    <div class="retro-card" style="padding:2.5rem;">
+      <div style="font-family:'Press Start 2P',monospace;font-size:0.4rem;color:var(--green-glow);text-shadow:0 0 8px var(--green-glow);letter-spacing:0.15em;margin-bottom:1.2rem;">WS — 01 · ADVANCED</div>
+      <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:0.8rem;line-height:1.15;">Open Code:<br>Orchestrating AI Agents</div>
+      <p style="font-size:0.68rem;color:var(--off-white);line-height:1.9;border-left:2px solid var(--green-mid);padding-left:1rem;margin-bottom:1.8rem;">Go beyond single-model prompting. This workshop dives into how to architect multi-agent systems — where models hand off tasks, check each other's work, and run in parallel. Built around real open-source tooling.</p>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:0.62rem;color:var(--green-pale);">Topics covered:</div>
+      <ul style="margin-top:0.8rem;list-style:none;display:flex;flex-direction:column;gap:0.5rem;">
+        <li style="font-size:0.65rem;color:var(--off-white);display:flex;align-items:flex-start;gap:0.6rem;"><span style="color:var(--green-glow);flex-shrink:0;">▸</span> Orchestrating agent teams with Claude &amp; MCP</li>
+        <li style="font-size:0.65rem;color:var(--off-white);display:flex;align-items:flex-start;gap:0.6rem;"><span style="color:var(--green-glow);flex-shrink:0;">▸</span> Building agent-to-agent communication flows</li>
+        <li style="font-size:0.65rem;color:var(--off-white);display:flex;align-items:flex-start;gap:0.6rem;"><span style="color:var(--green-glow);flex-shrink:0;">▸</span> Setting up skills (e.g. frontend design) for richer, more consistent output</li>
+        <li style="font-size:0.65rem;color:var(--off-white);display:flex;align-items:flex-start;gap:0.6rem;"><span style="color:var(--green-glow);flex-shrink:0;">▸</span> Structuring prompts and tool chains that scale</li>
+      </ul>
+      <div style="margin-top:1.8rem;padding-top:1.2rem;border-top:1px solid rgba(77,255,77,0.1);font-size:0.6rem;color:var(--off-white);">
+        <span style="color:var(--green-pale);font-family:'Press Start 2P',monospace;font-size:0.38rem;">LEVEL</span> &nbsp;Intermediate – Advanced
+      </div>
+    </div>
+
+    <!-- Workshop 2 -->
+    <div class="retro-card" style="padding:2.5rem;">
+      <div style="font-family:'Press Start 2P',monospace;font-size:0.4rem;color:var(--green-glow);text-shadow:0 0 8px var(--green-glow);letter-spacing:0.15em;margin-bottom:1.2rem;">WS — 02 · BEGINNER</div>
+      <div style="font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:700;margin-bottom:0.8rem;line-height:1.15;">Code First:<br>Programming Without AI</div>
+      <p style="font-size:0.68rem;color:var(--off-white);line-height:1.9;border-left:2px solid var(--green-mid);padding-left:1rem;margin-bottom:1.8rem;">AI can write code, but it can't think for you. This workshop teaches the fundamentals of programming — variables, logic, loops, functions — so you actually understand what your AI tools are producing and can guide them intelligently.</p>
+      <div style="font-family:'IBM Plex Mono',monospace;font-size:0.62rem;color:var(--green-pale);">Topics covered:</div>
+      <ul style="margin-top:0.8rem;list-style:none;display:flex;flex-direction:column;gap:0.5rem;">
+        <li style="font-size:0.65rem;color:var(--off-white);display:flex;align-items:flex-start;gap:0.6rem;"><span style="color:var(--green-glow);flex-shrink:0;">▸</span> Core programming concepts: variables, types, control flow</li>
+        <li style="font-size:0.65rem;color:var(--off-white);display:flex;align-items:flex-start;gap:0.6rem;"><span style="color:var(--green-glow);flex-shrink:0;">▸</span> Functions, loops, and debugging without a crutch</li>
+        <li style="font-size:0.65rem;color:var(--off-white);display:flex;align-items:flex-start;gap:0.6rem;"><span style="color:var(--green-glow);flex-shrink:0;">▸</span> Reading and understanding code — not just running it</li>
+        <li style="font-size:0.65rem;color:var(--off-white);display:flex;align-items:flex-start;gap:0.6rem;"><span style="color:var(--green-glow);flex-shrink:0;">▸</span> How to leverage AI tools once you know the basics</li>
+      </ul>
+      <div style="margin-top:1.8rem;padding-top:1.2rem;border-top:1px solid rgba(77,255,77,0.1);font-size:0.6rem;color:var(--off-white);">
+        <span style="color:var(--green-pale);font-family:'Press Start 2P',monospace;font-size:0.38rem;">LEVEL</span> &nbsp;Complete Beginner
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- SCHEDULE -->
+<section id="schedule">
+  <div class="section-label">04 — Schedule</div>
+  <h2 class="section-title">The dragon's<br><em style="font-style:italic;color:var(--green-glow)">72 hours.</em></h2>
+  <div class="schedule-timeline">
+    <div class="schedule-item">
+      <div class="sched-time">FRI<br>5:00 PM</div>
+      <div>
+        <div class="sched-event">Check-In & Set Up</div>
+        <p class="sched-desc">Arrive, grab your badge, find your team and workspace. Welcome reception with snacks and sponsor booths.</p>
+      </div>
+    </div>
+    <div class="schedule-item">
+      <div class="sched-time">FRI<br>7:00 PM</div>
+      <div>
+        <div class="sched-event">Opening Ceremony 🐉</div>
+        <p class="sched-desc">Keynote, track reveals, hacking rules briefing. The dragon awakens — hacking officially begins.</p>
+      </div>
+    </div>
+    <div class="schedule-item">
+      <div class="sched-time">SAT<br>12:00 AM</div>
+      <div>
+        <div class="sched-event">Midnight Fuel Drop</div>
+        <p class="sched-desc">Late-night pizza, energy drinks, and a mystery sponsor challenge dropped for bonus prizes.</p>
+      </div>
+    </div>
+    <div class="schedule-item">
+      <div class="sched-time">SAT<br>10:00 AM</div>
+      <div>
+        <div class="sched-event">Workshop & Office Hours</div>
+        <p class="sched-desc">Technical workshops from sponsors. One-on-one mentoring sessions with engineers and designers.</p>
+      </div>
+    </div>
+    <div class="schedule-item">
+      <div class="sched-time">SUN<br>7:00 AM</div>
+      <div>
+        <div class="sched-event">Submissions Close</div>
+        <p class="sched-desc">Code freeze. Submit your Devpost, prepare your demo. Breakfast served.</p>
+      </div>
+    </div>
+    <div class="schedule-item">
+      <div class="sched-time">SUN<br>10:00 AM</div>
+      <div>
+        <div class="sched-event">Judging & Demos</div>
+        <p class="sched-desc">Present to our panel of industry judges. 3-minute pitches, 2 minutes Q&A.</p>
+      </div>
+    </div>
+    <div class="schedule-item">
+      <div class="sched-time">SUN<br>1:00 PM</div>
+      <div>
+        <div class="sched-event">Closing Ceremony & Awards 🏆</div>
+        <p class="sched-desc">Winners crowned. Prizes awarded. Legends made. The dragon rests… until next year.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section id="faq">
+  <div class="section-label">05 — FAQ</div>
+  <h2 class="section-title">Questions,<br><em style="font-style:italic;color:var(--green-glow)">answered.</em></h2>
+  <div class="faq-grid">
+    <div class="faq-item">
+      <div class="faq-q">Who can participate?</div>
+      <p class="faq-a">Any student currently enrolled in high school (Grades 9–12) in Ontario. You do not need to attend Castlebrooke Secondary to join.</p>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Do I need a team?</div>
+      <p class="faq-a">Nope! Solo participants are welcome. You can also form teams of 2–4. We'll have a team formation session at the opening ceremony for those who need one.</p>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What experience do I need?</div>
+      <p class="faq-a">None at all. We actively encourage beginners. We have workshops, mentors, and a dedicated Best Beginner prize just for first-timers.</p>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">Is it free to attend?</div>
+      <p class="faq-a">Yes — completely free. Meals, drinks, snacks, and swag are all included for the duration of the event. Just register and show up.</p>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">What should I bring?</div>
+      <p class="faq-a">Your laptop, charger, any hardware you plan to use, and a government/school ID. Sleeping bags are optional — we have a rest area, but most hackers power through.</p>
+    </div>
+    <div class="faq-item">
+      <div class="faq-q">How are projects judged?</div>
+      <p class="faq-a">Projects are evaluated on innovation & creativity, technical complexity, impact & feasibility, and quality of presentation. Judges are industry professionals and alumni.</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">CASTLEBROOKE<br>HACKS '26</div>
+  <div class="footer-copy">© 2026 Castlebrooke Hacks. All rights reserved.</div>
+</footer>
+
+<script>
+  // Scroll-based fade-in for sections
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.style.opacity = '1';
+        entry.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.track-card, .prize-card, .schedule-item, .faq-item').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+    observer.observe(el);
+  });
+</script>
+</body>
+</html>
