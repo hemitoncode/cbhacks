@@ -881,6 +881,45 @@
 
   .footer-links a:hover { opacity: 1; color: var(--green-glow); }
 
+  /* ── SPONSORS ── */
+  #sponsors {
+    background: var(--green-deep);
+    text-align: center;
+  }
+
+  .sponsors-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    justify-content: center;
+    align-items: center;
+    margin-top: 3rem;
+  }
+
+  .sponsor-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+  }
+
+  .sponsor-logo-img {
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
+    border-radius: 50%;
+    border: 1px solid rgba(77,255,77,0.2);
+    padding: 4px;
+    transition: border-color 0.25s, box-shadow 0.25s, transform 0.2s;
+    background: rgba(0,0,0,0.3);
+  }
+
+  .sponsor-logo-img:hover {
+    border-color: rgba(77,255,77,0.55);
+    box-shadow: 0 0 20px rgba(77,255,77,0.25);
+    transform: translateY(-3px);
+  }
+
   /* ── ANIMATIONS ON LOAD ── */
   .fade-up {
     opacity: 0;
@@ -957,7 +996,7 @@
   <div class="ticker-inner">
     <span class="ticker-item">CASTLEBROOKE HACKS '26</span>
     <span class="ticker-sep">✦</span>
-    <span class="ticker-item">72 HOURS OF BUILDING</span>
+    <span class="ticker-item">TWO DAYS OF BUILDING</span>
     <span class="ticker-sep">✦</span>
     <span class="ticker-item">FREE FOOD & SWAG</span>
     <span class="ticker-sep">✦</span>
@@ -965,7 +1004,7 @@
     <span class="ticker-sep">✦</span>
     <span class="ticker-item">CASTLEBROOKE HACKS '26</span>
     <span class="ticker-sep">✦</span>
-    <span class="ticker-item">72 HOURS OF BUILDING</span>
+    <span class="ticker-item">TWO DAYS OF BUILDING</span>
     <span class="ticker-sep">✦</span>
     <span class="ticker-item">FREE FOOD & SWAG</span>
     <span class="ticker-sep">✦</span>
@@ -980,8 +1019,8 @@
     <div class="section-label">01 — About</div>
     <h2 class="section-title">Where legends<br><em style="font-style:italic;color:var(--green-glow)">are forged.</em></h2>
     <div class="about-body" style="margin-top:1.5rem;">
-      <p>Castlebrooke Hacks '26 is Brampton's premier high-school hackathon — 48 uninterrupted hours where students shed sleep, chase ideas, and build projects that matter.</p>
-      <p>Hosted at Castlebrooke Secondary School, we bring together the sharpest student minds across Ontario for a weekend of coding, creating, and competing under the banner of our dragon.</p>
+      <p>Castlebrooke Hacks '26 is Brampton's premier high-school hackathon — two full days of building, learning, and competing alongside the sharpest student minds in Ontario.</p>
+      <p>Hosted at Castlebrooke Secondary School, this is a daytime in-person event with no overnight stays. Show up, build something incredible, and head home with memories (and prizes) that last.</p>
       <p>Whether you're a seasoned hacker or picking up a keyboard for the first time, there's a team, a track, and a prize with your name on it. Come hungry. Leave legendary.</p>
     </div>
   </div>
@@ -995,10 +1034,10 @@
         <div><span class="prompt">$ </span><span class="cmd">event --info</span></div>
         <div class="out">Loading event data...</div>
         <div>&nbsp;</div>
-        <div><span class="highlight">DATE</span>   March 20–22, 2026</div>
+        <div><span class="highlight">DATE</span>   March 21–22, 2026</div>
         <div><span class="highlight">VENUE</span>  Castlebrooke Secondary</div>
         <div><span class="highlight">CITY</span>   Brampton, Ontario</div>
-        <div><span class="highlight">HOURS</span>  48</div>
+        <div><span class="highlight">FORMAT</span> Daytime — no overnight</div>
         <div>&nbsp;</div>
         <div><span class="prompt">$ </span><span class="cmd">eligibility --check</span></div>
         <div class="out">✓ High school students (Gr. 9–12)</div>
@@ -1106,52 +1145,59 @@
 <!-- SCHEDULE -->
 <section id="schedule">
   <div class="section-label">04 — Schedule</div>
-  <h2 class="section-title">The dragon's<br><em style="font-style:italic;color:var(--green-glow)">72 hours.</em></h2>
+  <h2 class="section-title">The dragon's<br><em style="font-style:italic;color:var(--green-glow)">two days.</em></h2>
   <div class="schedule-timeline">
     <div class="schedule-item">
-      <div class="sched-time">FRI<br>5:00 PM</div>
+      <div class="sched-time">SAT<br>9:00 AM</div>
       <div>
         <div class="sched-event">Check-In & Set Up</div>
         <p class="sched-desc">Arrive, grab your badge, find your team and workspace. Welcome reception with snacks and sponsor booths.</p>
       </div>
     </div>
     <div class="schedule-item">
-      <div class="sched-time">FRI<br>7:00 PM</div>
+      <div class="sched-time">SAT<br>10:00 AM</div>
       <div>
         <div class="sched-event">Opening Ceremony 🐉</div>
         <p class="sched-desc">Keynote, track reveals, hacking rules briefing. The dragon awakens — hacking officially begins.</p>
       </div>
     </div>
     <div class="schedule-item">
-      <div class="sched-time">SAT<br>12:00 AM</div>
+      <div class="sched-time">SAT<br>1:00 PM</div>
       <div>
-        <div class="sched-event">Midnight Fuel Drop</div>
-        <p class="sched-desc">Late-night pizza, energy drinks, and a mystery sponsor challenge dropped for bonus prizes.</p>
+        <div class="sched-event">Lunch & Workshop — Day 1</div>
+        <p class="sched-desc">Fuel up and level up. Technical workshops from our sponsors running alongside lunch.</p>
       </div>
     </div>
     <div class="schedule-item">
-      <div class="sched-time">SAT<br>10:00 AM</div>
+      <div class="sched-time">SAT<br>5:00 PM</div>
       <div>
-        <div class="sched-event">Workshop & Office Hours</div>
-        <p class="sched-desc">Technical workshops from sponsors. One-on-one mentoring sessions with engineers and designers.</p>
+        <div class="sched-event">End of Day 1</div>
+        <p class="sched-desc">Wrap up for the day. Save your progress — hacking resumes fresh in the morning.</p>
       </div>
     </div>
     <div class="schedule-item">
-      <div class="sched-time">SUN<br>7:00 AM</div>
+      <div class="sched-time">SUN<br>9:00 AM</div>
+      <div>
+        <div class="sched-event">Day 2 — Resume Hacking</div>
+        <p class="sched-desc">Check in, grab breakfast, and pick up right where you left off. Final sprint begins.</p>
+      </div>
+    </div>
+    <div class="schedule-item">
+      <div class="sched-time">SUN<br>1:00 PM</div>
       <div>
         <div class="sched-event">Submissions Close</div>
-        <p class="sched-desc">Code freeze. Submit your Devpost, prepare your demo. Breakfast served.</p>
+        <p class="sched-desc">Code freeze. Submit your Devpost and prepare your demo. Lunch served.</p>
       </div>
     </div>
     <div class="schedule-item">
-      <div class="sched-time">SUN<br>10:00 AM</div>
+      <div class="sched-time">SUN<br>2:00 PM</div>
       <div>
         <div class="sched-event">Judging & Demos</div>
         <p class="sched-desc">Present to our panel of industry judges. 3-minute pitches, 2 minutes Q&A.</p>
       </div>
     </div>
     <div class="schedule-item">
-      <div class="sched-time">SUN<br>1:00 PM</div>
+      <div class="sched-time">SUN<br>4:00 PM</div>
       <div>
         <div class="sched-event">Closing Ceremony & Awards 🏆</div>
         <p class="sched-desc">Winners crowned. Prizes awarded. Legends made. The dragon rests… until next year.</p>
@@ -1183,11 +1229,23 @@
     </div>
     <div class="faq-item">
       <div class="faq-q">What should I bring?</div>
-      <p class="faq-a">Your laptop, charger, any hardware you plan to use, and a government/school ID. Sleeping bags are optional — we have a rest area, but most hackers power through.</p>
+      <p class="faq-a">Your laptop, charger, any hardware you plan to use, and a school ID. This is a daytime event — no need to bring sleeping gear or overnight supplies.</p>
     </div>
     <div class="faq-item">
       <div class="faq-q">How are projects judged?</div>
       <p class="faq-a">Projects are evaluated on innovation & creativity, technical complexity, impact & feasibility, and quality of presentation. Judges are industry professionals and alumni.</p>
+    </div>
+  </div>
+</section>
+
+<!-- SPONSORS -->
+<section id="sponsors">
+  <div class="section-label">06 — Sponsors</div>
+  <h2 class="section-title">Powered by<br><em style="font-style:italic;color:var(--green-glow)">great partners.</em></h2>
+  <p style="font-size:0.72rem;color:var(--off-white);line-height:1.9;max-width:480px;margin:1rem auto 0;">These organizations make CB Hacks possible — from prizes to workshops to mentorship.</p>
+  <div class="sponsors-grid">
+    <div class="sponsor-item">
+      <img src="assets/sponsor-logo.png" alt="Sponsor" class="sponsor-logo-img">
     </div>
   </div>
 </section>
